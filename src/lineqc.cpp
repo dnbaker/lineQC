@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <cinttypes>
 #include <string>
 #include <cstdint>
@@ -22,6 +23,8 @@ int main(int argc, char *argv[]) {
     }
     }
     std::ifstream stream(argc == optind ? "/dev/stdin": argv[optind]);
+    std::vector<char> buffer(bufsize);
+    stream.rdbuf()->pubsetbuf(buffer.data(), buffer.size());
     if(!stream.good()) throw 1;
     std::uint64_t hashval(0), nlines(0);
     std::hash<std::string> hasher;
@@ -29,5 +32,5 @@ int main(int argc, char *argv[]) {
         hashval ^= hasher(line);
         ++nlines;
     }
-    std::fprintf(stderr, "Hash:%" PRIu64"\tLine Count:%" PRIu64 "\n", hashval, nlines);
+    std::fprintf(stderr, "Hash:%" PRIx64"\tLine Count:%" PRIu64 "\n", hashval, nlines);
 }

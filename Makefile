@@ -27,14 +27,14 @@ OBJS=$(patsubst %.cpp,%.o,$(wildcard lib/*.cpp))
 TEST_OBJS=$(patsubst %.cpp,%.o,$(wildcard test/*.cpp))
 EXEC_OBJS=$(patsubst %.cpp,%.o,$(wildcard src/*.cpp)) $(patsubst %.cpp,%.fo,$(wildcard src/*.cpp))
 
-EX=$(patsubst src/%.fo,%f,$(EXEC_OBJS)) $(patsubst src/%.o,%,$(EXEC_OBJS))
+EX=$(patsubst src/%.o,%,$(EXEC_OBJS))
 
 # If compiling with c++ < 17 and your compiler does not provide
 # bessel functions with c++14, you must compile against boost.
 
 INCLUDE=-I. -Iclhash
 
-all: $(OBJS) $(EX) python
+all: $(OBJS) $(EX)
 print-%  : ; @echo $* = $($*)
 
 obj: $(OBJS) $(EXEC_OBJS)
@@ -51,9 +51,6 @@ test/%.o: test/%.cpp $(OBJS)
 %: src/%.cpp $(OBJS)
 	$(CXX) $(CXXFLAGS) -DFLOAT_TYPE=double $(DBG) $(INCLUDE) $(LD) $(OBJS) $< -o $@ $(LIB)
 
-%f: src/%.cpp $(OBJS)
-	$(CXX) $(CXXFLAGS) -DFLOAT_TYPE=float $(DBG) $(INCLUDE) $(LD) $(OBJS) $< -o $@ $(LIB)
-
 %.o: %.c
 	$(CC) $(CCFLAGS) -Wno-sign-compare $(DBG) $(INCLUDE) $(LD) -c $< -o $@ $(LIB)
 
@@ -63,6 +60,6 @@ test/%.o: test/%.cpp $(OBJS)
 #	$(CXX) $(CXXFLAGS) $(INCLUDE) $(TEST_OBJS) $(LD) $(OBJS) -o $@ $(LIB)
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(EX)
 
 mostlyclean: clean

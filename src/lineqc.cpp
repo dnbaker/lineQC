@@ -12,7 +12,6 @@ int usage(const char *name) {
 }
 
 int main(int argc, char *argv[]) {
-    std::string line;
     unsigned bufsize(1 << 16);
     std::ios_base::sync_with_stdio(false);
     int c;
@@ -28,9 +27,6 @@ int main(int argc, char *argv[]) {
     if(!stream.good()) throw 1;
     std::uint64_t hashval(0), nlines(0);
     std::hash<std::string> hasher;
-    while(std::getline(stream, line)) {
-        hashval ^= hasher(line);
-        ++nlines;
-    }
-    std::fprintf(stderr, "Hash:%" PRIx64"\tLine Count:%" PRIu64 "\n", hashval, nlines);
+    for(std::string line; std::getline(stream, line); hashval ^= hasher(line), ++nlines);
+    std::fprintf(stderr, "Hash:0x%" PRIx64"\tLine Count:%" PRIu64 "\n", hashval, nlines);
 }
